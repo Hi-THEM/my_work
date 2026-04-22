@@ -1,64 +1,40 @@
-# FitTrack Database Setup Guide
+# FitTrack Supabase Database Setup Guide
 
-This guide explains how to set up the MySQL database for the FitTrack application. The application requires MySQL 8.0+.
+This guide explains how to set up the Supabase database for the FitTrack application.
 
-## Option 1: Local Development Setup
+## Prerequisites
+- A Supabase account (sign up at [supabase.com](https://supabase.com))
 
-If you are running the database locally on your machine:
+## Setup Steps
 
-1. **Install MySQL Server:**
-   Download and install [MySQL Community Server](https://dev.mysql.com/downloads/mysql/).
+1. **Create a New Supabase Project:**
+   - Go to [Supabase Dashboard](https://app.supabase.com)
+   - Click "New Project"
+   - Fill in project details (name, database password, region)
+   - Wait for the project to be created (may take a few minutes)
 
-2. **Login to MySQL:**
-   Open your terminal/command prompt and log in as root:
-   ```bash
-   mysql -u root -p
-   ```
+2. **Get Connection Details:**
+   - In your project dashboard, go to Settings > API
+   - Copy the "Project URL" and "anon public" key
+   - Add them to your `.env.local` file:
+     ```
+     VITE_SUPABASE_URL=your_project_url
+     VITE_SUPABASE_ANON_KEY=your_anon_key
+     ```
 
-3. **Run the Schema Script:**
-   From the MySQL shell, source the `schema.sql` file located in the `database` folder. Replace the path below with your actual absolute path:
-   ```sql
-   SOURCE C:/path/to/pfa-projet/database/schema.sql;
-   ```
+3. **Run the Schema:**
+   - In your Supabase project, go to SQL Editor
+   - Copy and paste the entire content of `schema.sql`
+   - Click "Run" to execute the schema creation
 
-4. **Run the Seed Data Script:**
-   After the schema is created, populate it with seed data:
-   ```sql
-   SOURCE C:/path/to/pfa-projet/database/insert_seed.sql;
-   ```
+4. **Verify Setup:**
+   - Go to Table Editor in Supabase dashboard
+   - Confirm all tables are created: `user_profiles`, `exercises`, `workout_sessions`, `workout_exercises`, `set_logs`, `food_items`, `meal_entries`
 
-5. **Verify the Installation:**
-   ```sql
-   USE fittrack_db;
-   SHOW TABLES;
-   SELECT * FROM exercises LIMIT 5;
-   ```
+5. **Optional: Seed Data**
+   - If you have seed data, run `insert_seed.sql` (update to PostgreSQL syntax if needed)
 
-## Option 2: Cloud Database Setup (PlanetScale / Aiven)
-
-If you are using a cloud provider for production or shared development:
-
-1. Create a new database named `fittrack_db` (or equivalent provided by your host).
-2. Most cloud providers offer a Web Console or CLI to import SQL files.
-3. Import `schema.sql` first.
-4. Import `insert_seed.sql` second.
-5. Obtain your Connection String URI. It should look something like:
-   `mysql://username:password@host.region.provider.com/fittrack_db`
-
-## Environment Variables
-
-Once the database is running, you will need to add the connection details to your backend `.env` file (which will be created in Phase 2).
-
-```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_mysql_password
-DB_NAME=fittrack_db
-DB_PORT=3306
-```
-
-## Demo Account
-
-The seed data script automatically creates an admin account for testing:
-- **Email:** `demo@fittrack.com`
-- **Password:** `password123`
+## Troubleshooting
+- If queries fail, check RLS policies in Supabase dashboard under Authentication > Policies
+- Ensure your user is authenticated in the app before making queries
+- For production, set up proper RLS policies to secure data
